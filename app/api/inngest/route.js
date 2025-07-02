@@ -4,7 +4,7 @@ import {
   syncUserCreation,
   syncUserUpdation,
   syncUserDeletion,
-} from "@/config/inngest";
+} from "../../../config/inngest";
 // import { helloWorld } from "../../../inngest/functions";
 
 export const { GET, POST, PUT } = serve({
