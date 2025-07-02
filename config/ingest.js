@@ -1,11 +1,13 @@
+// config/ingest.js
+
 import { Inngest } from "inngest";
 import connectToDB from "./db";
 import User from "@/models/User";
 
-// Create a client to send and receive events
+// Initialize the Inngest client
 export const inngest = new Inngest({ id: "quickcart-next" });
 
-// Inngest function to save user data to a database
+// Function: Save new user
 export const saveUserData = inngest.createFunction(
   {
     id: "sync-user-from-clerk",
@@ -13,12 +15,12 @@ export const saveUserData = inngest.createFunction(
   {
     event: "clerk/user.created",
   },
-  async (event) => {
+  async ({ event }) => {
     const { id, first_name, last_name, email_address, img_url } = event.data;
 
     const userData = {
       _id: id,
-      name: `${first_name} ${last_name}`, // fixed: + to space
+      name: `${first_name} ${last_name}`,
       email: email_address[0].email_address,
       imgUrl: img_url,
       cartItems: {},
@@ -31,7 +33,7 @@ export const saveUserData = inngest.createFunction(
   }
 );
 
-// Inngest function to update user data in a database
+// Function: Update user
 export const updateUserData = inngest.createFunction(
   {
     id: "update-user-from-clerk",
@@ -39,11 +41,11 @@ export const updateUserData = inngest.createFunction(
   {
     event: "clerk/user.updated",
   },
-  async (event) => {
+  async ({ event }) => {
     const { id, first_name, last_name, email_address, img_url } = event.data;
 
     const userData = {
-      name: `${first_name} ${last_name}`, // fixed: + to space
+      name: `${first_name} ${last_name}`,
       email: email_address[0].email_address,
       imgUrl: img_url,
     };
@@ -54,7 +56,8 @@ export const updateUserData = inngest.createFunction(
     return { success: true };
   }
 );
-// Inngest function to delete user data from a database
+
+// Function: Delete user
 export const deleteUserData = inngest.createFunction(
   {
     id: "delete-user-from-clerk",
@@ -62,7 +65,7 @@ export const deleteUserData = inngest.createFunction(
   {
     event: "clerk/user.deleted",
   },
-  async (event) => {
+  async ({ event }) => {
     const { id } = event.data;
 
     await connectToDB();
@@ -71,3 +74,6 @@ export const deleteUserData = inngest.createFunction(
     return { success: true };
   }
 );
+
+// ✅ Export all functions as an array
+export const functions = [saveUserData, updateUserData, deleteUserData];

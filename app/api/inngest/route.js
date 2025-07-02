@@ -1,5 +1,6 @@
 import { serve } from "inngest/next";
 import {
+  functions,
   inngest,
   syncUserCreation,
   syncUserUpdation,
